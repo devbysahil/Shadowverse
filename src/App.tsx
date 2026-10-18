@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import type { ReactNode } from 'react';
 import {
-  Flame, Users, MessageSquare, LogOut, Plus, Crown, Radio,
+  Flame, LogOut, Plus, Crown, Radio,
   Volume2, VolumeX, Menu, Palette, BookOpen, Gamepad2, Hash, X, Bomb, Layers,Eye,
   Type
 } from 'lucide-react';
@@ -164,6 +163,8 @@ export default function App() {
       return;
     }
 
+    if (isRoomFull(room)) { setJoinError('Room full hai!'); return; }
+
     await joinRoom(room.id, user);
     setActiveRoom(room);
     setJoinRoomOpen(false);
@@ -171,7 +172,11 @@ export default function App() {
   };
 
   const handleJoinRoom = async (room: any) => {
-    if (!user) return; soundFX.playClick();
+    if (!user) return;
+
+    if (isRoomFull(room)) { alert('Room full hai!'); return; }
+     
+    soundFX.playClick();
     await joinRoom(room.id, user); setActiveRoom(room);
   };
 
@@ -514,7 +519,7 @@ function SocialRoomWorkspace({ room, user, onLeave, onDelete }: any) {
 
 
 
-function StudyTogetherActivity({ roomId, user }: { roomId?: string, user?: any }) {
+function StudyTogetherActivity({ roomId }: { roomId?: string, user?: any }) {
   const [seconds, setSeconds] = useState(1500);
   const [isActive, setIsActive] = useState(false);
 
@@ -3059,7 +3064,7 @@ function ShadowBombGame({ room, user }: any) {
   const prevRound = useRef(-1);
   const tried = useRef(-1);
 
-  const getNow = () => Date.now() + offset.current;
+  // const getNow = () => Date.now() + offset.current;
   const nameOf = (uid?: string) => allPlayers.find((p) => p.uid === uid)?.name || 'Player';
 
   const debris = useMemo(
@@ -3220,7 +3225,7 @@ function ShadowBombGame({ room, user }: any) {
   const playing = game.phase === 'playing';
   const finished = game.phase === 'finished';
   const inGame = game.playerIds.includes(user.uid);
-  const amAlive = game.alive.includes(user.uid);
+  // const amAlive = game.alive.includes(user.uid);
   const frozen = playing && nowMs < game.freezeUntil;
   const myTurn = playing && !frozen && game.holder === user.uid;
   const heat = playing && !frozen ? Math.min(1, Math.max(0, (nowMs - game.freezeUntil) / game.fuseMs)) : 0;
